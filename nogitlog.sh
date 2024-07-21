@@ -1,13 +1,16 @@
 #!/bin/bash
 
+read -p "Enter the branch name to purge: " branch_name
+
 git checkout --orphan temp_branch
 
 git add -A
+git reset -- "$0"
 
-git commit -am "Purged commits"
+git commit -m "Purged commits"
 
-git branch -D main
+git branch -D "$branch_name"
 
-git branch -m main
+git branch -m "$branch_name"
 
-git push -f origin main
+git push -f origin "$branch_name"

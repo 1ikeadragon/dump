@@ -3,58 +3,58 @@
     "tasks": [
         {
             "type": "cppbuild",
-            "label": "C/C++: clang build main.c",
+            "label": "C/C++: clang build active file",
             "command": "/usr/bin/clang",
             "args": [
                 "-fcolor-diagnostics",
                 "-fansi-escape-codes",
                 "-g",
-                "${workspaceFolder}/main.c",
+                "${file}",
                 "-o",
-                "${workspaceFolder}/main"
+                "${fileDirname}/${fileBasenameNoExtension}"
             ],
             "options": {
-                "cwd": "${workspaceFolder}"
+                "cwd": "${fileDirname}"
             },
             "problemMatcher": [
                 "$gcc"
             ],
             "group": "build",
-            "detail": "Builds main.c using clang."
+            "detail": "Builds the active C file using clang."
         },
         {
             "type": "shell",
-            "label": "Run: ./main",
-            "command": "./main",
+            "label": "Run: Active File",
+            "command": "${fileDirname}/${fileBasenameNoExtension}",
             "args": [],
             "options": {
-                "cwd": "${workspaceFolder}"
+                "cwd": "${fileDirname}"
             },
             "problemMatcher": [],
             "group": "test",
-            "detail": "Runs the compiled main program."
+            "detail": "Runs the compiled active C program."
         },
         {
-            "label": "Build and Run main.c",
+            "label": "Build and Run Active File",
             "dependsOn": [
-                "C/C++: clang build main.c",
-                "Run: ./main"
+                "C/C++: clang build active file",
+                "Run: Active File"
             ],
             "dependsOrder": "sequence",
             "type": "shell",
             "problemMatcher": [],
-            "detail": "Compiles main.c and immediately runs the program."
+            "detail": "Compiles and runs the currently active C file."
         },
         {
             "type": "shell",
-            "label": "Watch: Rebuild and Run main.c",
-            "command": "while true; do inotifywait -e close_write ${workspaceFolder}/main.c >/dev/null 2>&1 && echo '--- File modified, recompiling and running ---\\n' && /usr/bin/clang -fcolor-diagnostics -fansi-escape-codes -g ${workspaceFolder}/main.c -o ${workspaceFolder}/main && ./main ; echo '\\n'; done",
+            "label": "Watch: Rebuild and Run Active File",
+            "command": "while true; do inotifywait -e close_write ${file} >/dev/null 2>&1 && echo '--- File modified, recompiling and running ---\\n' && /usr/bin/clang -fcolor-diagnostics -fansi-escape-codes -g ${file} -o ${fileDirname}/${fileBasenameNoExtension} && ${fileDirname}/${fileBasenameNoExtension} ; echo '\\n'; done",
             "problemMatcher": [],
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
-            "detail": "Watches main.c for changes, rebuilds, and runs automatically."
+            "detail": "Watches the active C file for changes, rebuilds, and runs automatically."
         }
     ]
 }

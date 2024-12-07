@@ -1,0 +1,60 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "cppbuild",
+            "label": "C/C++: clang build main.c",
+            "command": "/usr/bin/clang",
+            "args": [
+                "-fcolor-diagnostics",
+                "-fansi-escape-codes",
+                "-g",
+                "${workspaceFolder}/main.c",
+                "-o",
+                "${workspaceFolder}/main"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "detail": "Builds main.c using clang."
+        },
+        {
+            "type": "shell",
+            "label": "Run: ./main",
+            "command": "./main",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+            "group": "test",
+            "detail": "Runs the compiled main program."
+        },
+        {
+            "label": "Build and Run main.c",
+            "dependsOn": [
+                "C/C++: clang build main.c",
+                "Run: ./main"
+            ],
+            "dependsOrder": "sequence",
+            "type": "shell",
+            "problemMatcher": [],
+            "detail": "Compiles main.c and immediately runs the program."
+        },
+        {
+            "type": "shell",
+            "label": "Watch: Rebuild and Run main.c",
+            "command": "while true; do inotifywait -e close_write ${workspaceFolder}/main.c >/dev/null 2>&1 && echo '--- File modified, recompiling and running ---\\n' && /usr/bin/clang -fcolor-diagnostics -fansi-escape-codes -g ${workspaceFolder}/main.c -o ${workspaceFolder}/main && ./main ; echo '\\n'; done",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Watches main.c for changes, rebuilds, and runs automatically."
+        }
+    ]
+}

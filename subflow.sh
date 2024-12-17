@@ -16,7 +16,7 @@ function run_subfinder_parallel() {
     input_file=$1
     output_file=$2
     echo "[*] Running subfinder on subdomains in parallel..."
-    cat "$input_file" | xargs -P "$threads" -n 1 -I {} subfinder -d {} -all -silent -o - >> "$output_file"
+    cat "$input_file" | xargs -P "$threads" -I {} subfinder -d {} -all -silent -o - >> "$output_file"
 }
 
 echo "[*] Running subfinder on: $domain..."

@@ -1,5 +1,11 @@
 #!/bin/bash
 
+if ! command -v java &> /dev/null; then
+    echo "Java is not installed or not available in your PATH."
+    echo "Please install Java and ensure it is available before running this script."
+    exit 1
+fi
+
 if [ "$SHELL" = "/bin/bash" ] || [ "$SHELL" = "/usr/bin/bash" ]; then
     SHELL_RC="$HOME/.bashrc"
 elif [ "$SHELL" = "/bin/zsh" ] || [ "$SHELL" = "/usr/bin/zsh" ]; then

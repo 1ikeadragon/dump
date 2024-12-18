@@ -50,14 +50,14 @@ if ! grep -q "ANDROID_SDK_ROOT" "$SHELL_RC"; then
     echo "# Android SDK environment variables" >>"$SHELL_RC"
     echo "export ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >>"$SHELL_RC"
     echo "export ANDROID_HOME=$ANDROID_SDK_ROOT" >>"$SHELL_RC"
-    echo "export PATH=\$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:\ANDROID_SDK_ROOT/emulator:\$ANDROID_SDK_ROOT/platform-tools:\$PATH" >>"$SHELL_RC"
+    echo "export PATH=\$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:\$ANDROID_SDK_ROOT/emulator:\$ANDROID_SDK_ROOT/platform-tools:\$PATH" >>"$SHELL_RC"
 fi
 
 echo "Applying changes to the shell"
 source "$SHELL_RC"
 
 echo "Downloading platform-tools using sdkmanager"
-y | "$CMDLINE_BIN_DIR/sdkmanager" "platform-tools"
+yes | "$CMDLINE_BIN_DIR/sdkmanager" "platform-tools"
 
 if [ ! -d "$PLATFORM_TOOLS_DIR" ]; then
     echo "Error: platform-tools directory is missing. Please check the installation."
@@ -78,7 +78,16 @@ if [ -z "$IMAGE" ]; then
 fi
 
 echo "Downloading the selected system image: $IMAGE"
-y | "$CMDLINE_BIN_DIR/sdkmanager" "$IMAGE"
+yes | "$CMDLINE_BIN_DIR/sdkmanager" "$IMAGE"
+
+ANDROID_VERSION=$(echo "$IMAGE" | grep -oP 'android-\K[0-9]+')
+
+if [ -n "$ANDROID_VERSION" ]; then
+    echo "Detected Android version: $ANDROID_VERSION. Downloading platform files."
+    yes | "$CMDLINE_BIN_DIR/sdkmanager" "platforms;android-$ANDROID_VERSION"
+else
+    echo "Unable to detect Android version from the system image. Skipping platform download."
+fi
 
 AVD_NAME="default"
 read -p "Name your AVD: " AVD_NAME
@@ -86,5 +95,4 @@ read -p "Name your AVD: " AVD_NAME
 echo "Creating an AVD with the name: $AVD_NAME"
 "$CMDLINE_BIN_DIR/avdmanager" create avd -n "$AVD_NAME" -k "$IMAGE" --device "pixel"
 
-
-echo "Your AVD ($AVD_NAME) is ready to use. Run emulator @($AVD_NAME) to start it."
+echo "Your AVD ($AVD_NAME) is ready to use. Run emulator @$AVD_NAME to start it."

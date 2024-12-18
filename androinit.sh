@@ -31,10 +31,10 @@ fi
 
 ZIP_FILE="$TOOLS_DIR/commandlinetools.zip"
 echo "Downloading Android SDK tools from: $DOWNLOAD_URL"
-curl -o "$ZIP_FILE" "$DOWNLOAD_URL"
+curl -o "$ZIP_FILE" "$DOWNLOAD_URL" || { echo "Download failed!"; exit 1; }
 
 echo "Extracting SDK tools to $TOOLS_DIR"
-unzip -o "$ZIP_FILE" -d "$TOOLS_DIR"
+unzip -o "$ZIP_FILE" -d "$TOOLS_DIR" || { echo "Extraction failed!"; exit 1; }
 rm "$ZIP_FILE"
 
 mkdir -p "$LATEST_DIR"
@@ -46,15 +46,16 @@ CMDLINE_BIN_DIR="$LATEST_DIR/bin"
 
 if ! grep -q "ANDROID_SDK_ROOT" "$SHELL_RC"; then
     echo "Exporting paths to $SHELL_RC"
-    echo "" >>"$SHELL_RC"
-    echo "# Android SDK environment variables" >>"$SHELL_RC"
-    echo "export ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >>"$SHELL_RC"
-    echo "export ANDROID_HOME=$ANDROID_SDK_ROOT" >>"$SHELL_RC"
-    echo "export PATH=\$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:\$ANDROID_SDK_ROOT/emulator:\$ANDROID_SDK_ROOT/platform-tools:\$PATH" >>"$SHELL_RC"
+    {
+        echo ""
+        echo "# Android SDK environment variables"
+        echo "export ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
+        echo "export ANDROID_HOME=$ANDROID_SDK_ROOT"
+        echo "export PATH=\$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:\$ANDROID_SDK_ROOT/emulator:\$ANDROID_SDK_ROOT/platform-tools:\$PATH"
+    } >>"$SHELL_RC"
 fi
 
-echo "Applying changes to the shell"
-source "$SHELL_RC"
+echo "Please reload your shell configuration by running: source $SHELL_RC"
 
 echo "Downloading platform-tools using sdkmanager"
 yes | "$CMDLINE_BIN_DIR/sdkmanager" "platform-tools"
@@ -80,13 +81,13 @@ fi
 echo "Downloading system image: $IMAGE"
 yes | "$CMDLINE_BIN_DIR/sdkmanager" "$IMAGE"
 
-ANDROID_VERSION=$(echo "$IMAGE" | grep -oP 'android-\K[0-9]+')
+ANDROID_VERSION=$(echo "$IMAGE" | grep -oE 'android-[0-9]+')
 
 if [ -n "$ANDROID_VERSION" ]; then
     echo "Detected Android version: $ANDROID_VERSION. Downloading platform files."
-    yes | "$CMDLINE_BIN_DIR/sdkmanager" "platforms;android-$ANDROID_VERSION"
+    yes | "$CMDLINE_BIN_DIR/sdkmanager" "platforms;$ANDROID_VERSION"
 else
-    echo "Unable to detect Android version from the system image. Skipping platform download."
+    echo "Unable to detect Android version from the system image. Skipping platform download. Make sure to download the platform otherwise emulator WILL NOT WORK."
 fi
 
 AVD_NAME="default"
@@ -95,4 +96,4 @@ read -p "Name your AVD: " AVD_NAME
 echo "Creating an AVD with the name: $AVD_NAME"
 "$CMDLINE_BIN_DIR/avdmanager" create avd -n "$AVD_NAME" -k "$IMAGE" --device "pixel"
 
-echo "Your AVD ($AVD_NAME) is ready to use. Run emulator @$AVD_NAME to start it."
+echo "Your AVD ($AVD_NAME) is ready to use. Source your shell config and run emulator @($AVD_NAME)"

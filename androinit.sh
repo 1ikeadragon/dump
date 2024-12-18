@@ -2,7 +2,7 @@
 
 if ! command -v java &> /dev/null; then
     echo "Java is not installed or not available in your PATH."
-    echo "Please install Java and ensure it is available before running this script."
+    echo "Install Java to run this script."
     exit 1
 fi
 
@@ -12,7 +12,7 @@ elif [ "$SHELL" = "/bin/zsh" ] || [ "$SHELL" = "/usr/bin/zsh" ]; then
     SHELL_RC="$HOME/.zshrc"
 else
     echo "Your current shell is not bash or zsh."
-    read -p "Please specify the path to your shell's rc file: " SHELL_RC
+    read -p "Specify the path to your shell's rc file: " SHELL_RC
 fi
 
 echo "Editing shell configuration file: $SHELL_RC"
@@ -25,7 +25,7 @@ mkdir -p "$TOOLS_DIR"
 DOWNLOAD_URL=$(curl -s https://developer.android.com/studio | grep -Eo 'https://dl.google.com/android/repository/commandlinetools-mac-[0-9]+_latest.zip' | head -n 1)
 
 if [ -z "$DOWNLOAD_URL" ]; then
-    echo "Unable to find the latest command-line tools download URL. Please check manually."
+    echo "Unable to find the latest command-line tools download URL. Install manually."
     exit 1
 fi
 
@@ -65,19 +65,19 @@ if [ ! -d "$PLATFORM_TOOLS_DIR" ]; then
 fi
 
 ARCH=$(uname -m)
-echo "Your system architecture is detected as: $ARCH"
-read -p "Do you want system images for the same architecture only? (y/n): " SAME_ARCH
+echo "System architecture detected: $ARCH"
+read -p "Do you want system images for the same architecture? (y/n): " SAME_ARCH
 
 echo "Listing available system images..."
 "$CMDLINE_BIN_DIR/sdkmanager" --list | grep "system-images"
 
-read -p "Please enter the system image you want to download (e.g., system-images;android-30;google_apis;x86_64): " IMAGE
+read -p "Please enter the system image you want to download (e.g., system-images;android-33;google_apis;x86_64): " IMAGE
 if [ -z "$IMAGE" ]; then
     echo "No system image provided. Exiting."
     exit 1
 fi
 
-echo "Downloading the selected system image: $IMAGE"
+echo "Downloading system image: $IMAGE"
 yes | "$CMDLINE_BIN_DIR/sdkmanager" "$IMAGE"
 
 ANDROID_VERSION=$(echo "$IMAGE" | grep -oP 'android-\K[0-9]+')

@@ -57,7 +57,7 @@ echo "Applying changes to the shell"
 source "$SHELL_RC"
 
 echo "Downloading platform-tools using sdkmanager"
-"$CMDLINE_BIN_DIR/sdkmanager" "platform-tools"
+y | "$CMDLINE_BIN_DIR/sdkmanager" "platform-tools"
 
 if [ ! -d "$PLATFORM_TOOLS_DIR" ]; then
     echo "Error: platform-tools directory is missing. Please check the installation."
@@ -78,7 +78,7 @@ if [ -z "$IMAGE" ]; then
 fi
 
 echo "Downloading the selected system image: $IMAGE"
-"$CMDLINE_BIN_DIR/sdkmanager" "$IMAGE"
+y | "$CMDLINE_BIN_DIR/sdkmanager" "$IMAGE"
 
 AVD_NAME="default"
 read -p "Name your AVD: " AVD_NAME

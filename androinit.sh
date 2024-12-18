@@ -50,7 +50,7 @@ if ! grep -q "ANDROID_SDK_ROOT" "$SHELL_RC"; then
     echo "# Android SDK environment variables" >>"$SHELL_RC"
     echo "export ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >>"$SHELL_RC"
     echo "export ANDROID_HOME=$ANDROID_SDK_ROOT" >>"$SHELL_RC"
-    echo "export PATH=\$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:\$ANDROID_SDK_ROOT/platform-tools:\$PATH" >>"$SHELL_RC"
+    echo "export PATH=\$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:\ANDROID_SDK_ROOT/emulator:\$ANDROID_SDK_ROOT/platform-tools:\$PATH" >>"$SHELL_RC"
 fi
 
 echo "Applying changes to the shell"
@@ -58,6 +58,11 @@ source "$SHELL_RC"
 
 echo "Downloading platform-tools using sdkmanager"
 "$CMDLINE_BIN_DIR/sdkmanager" "platform-tools"
+
+if [ ! -d "$PLATFORM_TOOLS_DIR" ]; then
+    echo "Error: platform-tools directory is missing. Please check the installation."
+    exit 1
+fi
 
 ARCH=$(uname -m)
 echo "Your system architecture is detected as: $ARCH"
@@ -75,9 +80,11 @@ fi
 echo "Downloading the selected system image: $IMAGE"
 "$CMDLINE_BIN_DIR/sdkmanager" "$IMAGE"
 
-AVD_NAME="Custom_AVD"
+AVD_NAME="default"
+read -p "Name your AVD: " AVD_NAME
+
 echo "Creating an AVD with the name: $AVD_NAME"
 "$CMDLINE_BIN_DIR/avdmanager" create avd -n "$AVD_NAME" -k "$IMAGE" --device "pixel"
 
-echo "Android SDK tools, platform-tools, and system images are installed!"
-echo "Your AVD ($AVD_NAME) is ready to use!"
+
+echo "Your AVD ($AVD_NAME) is ready to use. Run emulator @($AVD_NAME) to start it."

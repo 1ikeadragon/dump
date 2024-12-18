@@ -1,5 +1,14 @@
 #!/bin/bash
 
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    DOWNLOAD_URL=$(curl -s https://developer.android.com/studio | grep -Eo 'https://dl.google.com/android/repository/commandlinetools-linux-[0-9]+_latest.zip' | head -n 1)
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    DOWNLOAD_URL=$(curl -s https://developer.android.com/studio | grep -Eo 'https://dl.google.com/android/repository/commandlinetools-mac-[0-9]+_latest.zip' | head -n 1)
+else
+    echo "Unsupported platform: $OSTYPE"
+    exit 1
+fi
+
 if ! command -v java &> /dev/null; then
     echo "Java is not installed or not available in your PATH."
     echo "Install Java to run this script."
@@ -21,8 +30,6 @@ TOOLS_DIR="$HOME/Tools"
 CMDLINE_TOOLS_DIR="$TOOLS_DIR/cmdline-tools"
 LATEST_DIR="$CMDLINE_TOOLS_DIR/latest"
 mkdir -p "$TOOLS_DIR"
-
-DOWNLOAD_URL=$(curl -s https://developer.android.com/studio | grep -Eo 'https://dl.google.com/android/repository/commandlinetools-mac-[0-9]+_latest.zip' | head -n 1)
 
 if [ -z "$DOWNLOAD_URL" ]; then
     echo "Unable to find the latest command-line tools download URL. Install manually."
@@ -72,7 +79,7 @@ read -p "Do you want system images for the same architecture? (y/n): " SAME_ARCH
 echo "Listing available system images..."
 "$CMDLINE_BIN_DIR/sdkmanager" --list | grep "system-images"
 
-read -p "Please enter the system image you want to download (e.g., system-images;android-33;google_apis;x86_64): " IMAGE
+read -p "Enter the system image you want to download (e.g., system-images;android-33;google_apis;x86_64): " IMAGE
 if [ -z "$IMAGE" ]; then
     echo "No system image provided. Exiting."
     exit 1

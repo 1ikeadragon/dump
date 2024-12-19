@@ -10,7 +10,7 @@ else
 fi
 
 if ! command -v java &> /dev/null; then
-    echo "Java is not installed or not available in your PATH."
+    echo "!!!![ERR] Java is not installed or not available in your PATH."
     echo "Install Java to run this script."
     exit 1
 fi
@@ -20,11 +20,11 @@ if [ "$SHELL" = "/bin/bash" ] || [ "$SHELL" = "/usr/bin/bash" ]; then
 elif [ "$SHELL" = "/bin/zsh" ] || [ "$SHELL" = "/usr/bin/zsh" ]; then
     SHELL_RC="$HOME/.zshrc"
 else
-    echo "Your current shell is not bash or zsh."
+    echo "[INFO] Your current shell is not bash or zsh."
     read -p "Specify the path to your shell's rc file: " SHELL_RC
 fi
 
-echo "Editing shell configuration file: $SHELL_RC"
+echo "[INFO] Editing shell configuration file: $SHELL_RC"
 
 TOOLS_DIR="$HOME/Tools"
 CMDLINE_TOOLS_DIR="$TOOLS_DIR/cmdline-tools"
@@ -32,15 +32,15 @@ LATEST_DIR="$CMDLINE_TOOLS_DIR/latest"
 mkdir -p "$TOOLS_DIR"
 
 if [ -z "$DOWNLOAD_URL" ]; then
-    echo "Unable to find the latest command-line tools download URL. Install manually."
+    echo "!!!![ERR] Unable to find the latest command-line tools download URL. Install manually."
     exit 1
 fi
 
 ZIP_FILE="$TOOLS_DIR/commandlinetools.zip"
-echo "Downloading Android SDK tools from: $DOWNLOAD_URL"
+echo "[INFO] Downloading Android SDK tools from: $DOWNLOAD_URL"
 curl -o "$ZIP_FILE" "$DOWNLOAD_URL" || { echo "Download failed!"; exit 1; }
 
-echo "Extracting SDK tools to $TOOLS_DIR"
+echo "[INFO] Extracting SDK tools to $TOOLS_DIR"
 unzip -o "$ZIP_FILE" -d "$TOOLS_DIR" || { echo "Extraction failed!"; exit 1; }
 rm "$ZIP_FILE"
 
@@ -52,7 +52,7 @@ PLATFORM_TOOLS_DIR="$ANDROID_SDK_ROOT/platform-tools"
 CMDLINE_BIN_DIR="$LATEST_DIR/bin"
 
 if ! grep -q "ANDROID_SDK_ROOT" "$SHELL_RC"; then
-    echo "Exporting paths to $SHELL_RC"
+    echo "[INFO] Exporting paths to $SHELL_RC"
     {
         echo ""
         echo "# Android SDK environment variables"
@@ -62,18 +62,18 @@ if ! grep -q "ANDROID_SDK_ROOT" "$SHELL_RC"; then
     } >>"$SHELL_RC"
 fi
 
-echo "Please reload your shell configuration by running: source $SHELL_RC"
+echo "[INFO] Please reload your shell configuration by running: source $SHELL_RC"
 
-echo "Downloading platform-tools using sdkmanager"
+echo "[INFO] Downloading platform-tools using sdkmanager"
 y | "$CMDLINE_BIN_DIR/sdkmanager" "platform-tools"
 
 if [ ! -d "$PLATFORM_TOOLS_DIR" ]; then
-    echo "!!!! Error: platform-tools directory is missing. Please check the installation."
+    echo "!!!![ERR] platform-tools directory is missing. Please check the installation."
     exit 1
 fi
 
 ARCH=$(uname -m)
-echo "System architecture detected: $ARCH"
+echo "[INFO] System architecture detected: $ARCH"
 read -p "Do you want system images for the same architecture? (y/n): " SAME_ARCH
 
 echo "Listing available system images..."
@@ -81,26 +81,26 @@ echo "Listing available system images..."
 
 read -p "Enter the system image you want to download (e.g., system-images;android-33;google_apis;x86_64): " IMAGE
 if [ -z "$IMAGE" ]; then
-    echo "No system image provided. Exiting."
+    echo "!!!![ERR] No system image provided. Exiting."
     exit 1
 fi
 
-echo "Downloading system image: $IMAGE"
+echo "[INFO] Downloading system image: $IMAGE"
 y | "$CMDLINE_BIN_DIR/sdkmanager" "$IMAGE"
 
 ANDROID_VERSION=$(echo "$IMAGE" | grep -oE 'android-[0-9]+')
 
 if [ -n "$ANDROID_VERSION" ]; then
-    echo "Detected Android version: $ANDROID_VERSION. Downloading platform files."
+    echo "[INFO] Detected Android version: $ANDROID_VERSION. Downloading platform files."
     y | "$CMDLINE_BIN_DIR/sdkmanager" "platforms;$ANDROID_VERSION"
 else
-    echo "!!!! Unable to detect Android version from the system image. Skipping platform download. Make sure to download the platform otherwise emulator WILL NOT WORK."
+    echo "!!!![ERR] Unable to detect Android version from the system image. Skipping platform download. Make sure to download the platform otherwise emulator WILL NOT WORK."
 fi
 
 AVD_NAME="default"
 read -p "Name your AVD: " AVD_NAME
 
-echo "Creating an AVD with the name: $AVD_NAME"
+echo "[INFO] Creating an AVD with the name: $AVD_NAME"
 "$CMDLINE_BIN_DIR/avdmanager" create avd -n "$AVD_NAME" -k "$IMAGE" --device "pixel"
 
-echo "Your AVD ($AVD_NAME) is ready to use. Source your shell config and run emulator @($AVD_NAME)"
+echo "[SUCCESS] Your AVD ($AVD_NAME) is ready to use. Source your shell config and run emulator @($AVD_NAME)"

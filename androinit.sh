@@ -65,7 +65,7 @@ fi
 echo "[INFO] Please reload your shell configuration by running: source $SHELL_RC"
 
 echo "[INFO] Downloading platform-tools using sdkmanager"
-y | "$CMDLINE_BIN_DIR/sdkmanager" "platform-tools"
+yes | "$CMDLINE_BIN_DIR/sdkmanager" "platform-tools"
 
 if [ ! -d "$PLATFORM_TOOLS_DIR" ]; then
     echo "!!!![ERR] platform-tools directory is missing. Please check the installation."
@@ -86,7 +86,7 @@ if [ -z "$IMAGE" ]; then
 fi
 
 echo "[INFO] Downloading system image: $IMAGE"
-y | "$CMDLINE_BIN_DIR/sdkmanager" "$IMAGE"
+yes | "$CMDLINE_BIN_DIR/sdkmanager" "$IMAGE"
 
 ANDROID_VERSION=$(echo "$IMAGE" | grep -oE 'android-[0-9]+')
 

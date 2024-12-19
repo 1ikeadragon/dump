@@ -65,10 +65,10 @@ fi
 echo "Please reload your shell configuration by running: source $SHELL_RC"
 
 echo "Downloading platform-tools using sdkmanager"
-yes | "$CMDLINE_BIN_DIR/sdkmanager" "platform-tools"
+y | "$CMDLINE_BIN_DIR/sdkmanager" "platform-tools"
 
 if [ ! -d "$PLATFORM_TOOLS_DIR" ]; then
-    echo "Error: platform-tools directory is missing. Please check the installation."
+    echo "!!!! Error: platform-tools directory is missing. Please check the installation."
     exit 1
 fi
 
@@ -86,15 +86,15 @@ if [ -z "$IMAGE" ]; then
 fi
 
 echo "Downloading system image: $IMAGE"
-yes | "$CMDLINE_BIN_DIR/sdkmanager" "$IMAGE"
+y | "$CMDLINE_BIN_DIR/sdkmanager" "$IMAGE"
 
 ANDROID_VERSION=$(echo "$IMAGE" | grep -oE 'android-[0-9]+')
 
 if [ -n "$ANDROID_VERSION" ]; then
     echo "Detected Android version: $ANDROID_VERSION. Downloading platform files."
-    yes | "$CMDLINE_BIN_DIR/sdkmanager" "platforms;$ANDROID_VERSION"
+    y | "$CMDLINE_BIN_DIR/sdkmanager" "platforms;$ANDROID_VERSION"
 else
-    echo "Unable to detect Android version from the system image. Skipping platform download. Make sure to download the platform otherwise emulator WILL NOT WORK."
+    echo "!!!! Unable to detect Android version from the system image. Skipping platform download. Make sure to download the platform otherwise emulator WILL NOT WORK."
 fi
 
 AVD_NAME="default"

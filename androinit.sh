@@ -92,7 +92,7 @@ ANDROID_VERSION=$(echo "$IMAGE" | grep -oE 'android-[0-9]+')
 
 if [ -n "$ANDROID_VERSION" ]; then
     echo "[INFO] Detected Android version: $ANDROID_VERSION. Downloading platform files."
-    y | "$CMDLINE_BIN_DIR/sdkmanager" "platforms;$ANDROID_VERSION"
+    yes | "$CMDLINE_BIN_DIR/sdkmanager" "platforms;$ANDROID_VERSION"
 else
     echo "!!!![ERR] Unable to detect Android version from the system image. Skipping platform download. Make sure to download the platform otherwise emulator WILL NOT WORK."
 fi
